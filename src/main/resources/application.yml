@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: main_backend
+  datasource:
+    password: main_pass
+    username: main_user
+    url: jdbc:postgresql://localhost:5432/main_db
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: off
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 8MB
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-doc
+  swagger-ui:
+    path: /swagger
+jwt:
+  secret: JkPAw6ID5jKiNA1jt+P5DKairwarWNwWMnfcN66ZpDdkeQLxC9d23zD83SDmDRbSObE0GjgDJuqdi8tARQK9Bw==
+  lifetime: 7200000
