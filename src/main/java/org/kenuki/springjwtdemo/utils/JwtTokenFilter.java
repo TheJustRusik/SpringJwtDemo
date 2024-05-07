@@ -1,6 +1,7 @@
 package org.kenuki.springjwtdemo.utils;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +35,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 username = jwtTokenUtils.extractUsername(jwt);
             } catch (ExpiredJwtException exception) {
                 log.debug("the token's lifetime has expired.");
+            } catch (SignatureException exception) {
+                log.debug("the token's signature incorrect.");
             }
         }
 
@@ -42,6 +45,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     username, null, jwtTokenUtils.extractRoles(jwt).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
             );
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+
         }
 
         filterChain.doFilter(request, response);

@@ -29,18 +29,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(
-                            "/api/security/login",
-                            "/api/security/register",
-                            "/swagger/**", "/swagger", "/swagger-ui/**", "/swagger-ui",
-                            "/api-doc/**", "/api-doc"
-                    ).permitAll()
-                    .anyRequest().authenticated())
-            .sessionManagement(httpSecuritySessionManagementConfigurer ->
-                    httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/security/login",
+                                "/api/security/register",
+                                "/swagger/**", "/swagger", "/swagger-ui/**", "/swagger-ui",
+                                "/api-doc/**", "/api-doc"
+                        ).permitAll()
+                        .anyRequest().authenticated())
+                .authenticationProvider(authenticationProvider())
+                .sessionManagement(httpSecuritySessionManagementConfigurer ->
+                        httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

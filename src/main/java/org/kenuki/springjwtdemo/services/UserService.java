@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -49,7 +52,7 @@ public class UserService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return jwtTokenUtils.generateToken(authentication);
+        return jwtTokenUtils.generateToken(authentication, userRepository.findByNicknameOrEmail(email, email).orElseThrow().getRoles().stream().map());
     }
 
 }
