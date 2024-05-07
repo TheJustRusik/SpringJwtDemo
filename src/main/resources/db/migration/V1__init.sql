@@ -10,6 +10,10 @@ create table roles (
     role varchar(16) not null unique
 );
 
+insert into roles values
+                      (1, 'USER'),
+                      (2, 'ADMIN');
+
 create table user_roles (
     user_id bigint references users,
     role_id bigint references roles

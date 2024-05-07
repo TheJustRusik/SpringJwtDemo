@@ -32,8 +32,8 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers(
-                            "/security/login",
-                            "/security/register",
+                            "/api/security/login",
+                            "/api/security/register",
                             "/swagger/**", "/swagger", "/swagger-ui/**", "/swagger-ui",
                             "/api-doc/**", "/api-doc"
                     ).permitAll()
@@ -41,7 +41,6 @@ public class SecurityConfig {
             .sessionManagement(httpSecuritySessionManagementConfigurer ->
                     httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 
@@ -60,6 +59,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(5);
     }
 }
