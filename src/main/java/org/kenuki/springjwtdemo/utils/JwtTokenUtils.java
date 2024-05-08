@@ -1,14 +1,10 @@
 package org.kenuki.springjwtdemo.utils;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.kenuki.springjwtdemo.models.enities.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -23,19 +19,22 @@ public class JwtTokenUtils {
     @Value("${jwt.lifetime}")
     private Duration jwtLifetime;
 
-    public String generateToken(Authentication userDetails, List<? extends SimpleGrantedAuthority> roles) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", roles);
+
+
+    public String generateToken(Authentication userDetails) {
+//        Map<String, Object> claims = new HashMap<>();
+//        var roles = userRepository.findByNicknameOrEmail(userDetails.getName(), userDetails.getName()).get().getRoles();
+//        claims.put("roles", roles);
 
         Date issuedDate = new Date();
         Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
 
         return Jwts.builder()
-                .claims(claims)
+//                .claims(claims)
                 .subject(userDetails.getName())
                 .issuedAt(issuedDate)
                 .expiration(expiredDate)
-                .signWith(signKey())
+                .signWith(key())
                 .compact();
     }
 
@@ -43,20 +42,32 @@ public class JwtTokenUtils {
         return extractAllClaims(token).getSubject();
     }
 
-    public List<?> extractRoles(String token) {
+    public List<String> extractRoles(String token) {
         return extractAllClaims(token).get("roles", List.class);
     }
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .verifyWith(signKey())
+                .verifyWith(key())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
     }
 
-    private SecretKey signKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        return Keys.hmacShaKeyFor(keyBytes);
+    private SecretKey key(){
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith((SecretKey) key())
+                    .build()
+                    .parse(token);
+            return true;
+        }catch (MalformedJwtException | ExpiredJwtException | UnsupportedJwtException |
+                IllegalArgumentException malformedJwtException){
+            return false;
+        }
     }
 }

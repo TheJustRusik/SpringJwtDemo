@@ -1,5 +1,6 @@
 package org.kenuki.springjwtdemo.configs;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.kenuki.springjwtdemo.services.CustomUserDetailsService;
 import org.kenuki.springjwtdemo.utils.JwtTokenFilter;
@@ -22,10 +23,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class SecurityConfig {
-    private final JwtTokenFilter jwtFilter;
-    private final CustomUserDetailsService userDetailsService;
+    private JwtTokenFilter jwtFilter;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -38,7 +38,6 @@ public class SecurityConfig {
                                 "/api-doc/**", "/api-doc"
                         ).permitAll()
                         .anyRequest().authenticated())
-                .authenticationProvider(authenticationProvider())
                 .sessionManagement(httpSecuritySessionManagementConfigurer ->
                         httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -46,13 +45,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {

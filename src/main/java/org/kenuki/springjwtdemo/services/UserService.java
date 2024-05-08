@@ -52,7 +52,7 @@ public class UserService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return jwtTokenUtils.generateToken(authentication, userRepository.findByNicknameOrEmail(email, email).orElseThrow().getRoles().stream().map());
+        return jwtTokenUtils.generateToken(authentication);
     }
 
 }
