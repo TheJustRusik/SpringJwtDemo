@@ -5,11 +5,13 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.time.Duration;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenUtils {
@@ -19,18 +21,18 @@ public class JwtTokenUtils {
     @Value("${jwt.lifetime}")
     private Duration jwtLifetime;
 
-
-
     public String generateToken(Authentication userDetails) {
-//        Map<String, Object> claims = new HashMap<>();
-//        var roles = userRepository.findByNicknameOrEmail(userDetails.getName(), userDetails.getName()).get().getRoles();
-//        claims.put("roles", roles);
+        Map<String, Object> claims = new HashMap<>();
+        var roles = userDetails.getAuthorities().stream().map(
+                GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        claims.put("roles", roles);
 
         Date issuedDate = new Date();
         Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
 
         return Jwts.builder()
-//                .claims(claims)
+                .claims(claims)
                 .subject(userDetails.getName())
                 .issuedAt(issuedDate)
                 .expiration(expiredDate)

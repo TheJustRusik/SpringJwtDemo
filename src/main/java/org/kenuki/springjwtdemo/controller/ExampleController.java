@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/example")
+@RequestMapping("/api/ex")
 @AllArgsConstructor
 public class ExampleController {
     @GetMapping("/for_all")
@@ -27,7 +27,7 @@ public class ExampleController {
         return ResponseEntity.ok("This data for admins");
     }
 
-    @GetMapping("/for_admin")
+    @GetMapping("/for_admin_and_user")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     ResponseEntity<String> for_user_and_admin() {
         return ResponseEntity.ok("This data for admins and users");

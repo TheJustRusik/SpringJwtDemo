@@ -47,11 +47,13 @@ public class UserService {
         return login(loginDTO.getEmail(), loginDTO.getPassword());
     }
     private String login(String email, String password) {
+        System.out.println("GG2");
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password)
         );
+        System.out.println("GG3");
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        System.out.println("GG4");
         return jwtTokenUtils.generateToken(authentication);
     }
 

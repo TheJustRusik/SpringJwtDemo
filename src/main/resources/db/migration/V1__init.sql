@@ -16,5 +16,6 @@ insert into roles values
 
 create table user_roles (
     user_id bigint references users,
-    role_id bigint references roles
+    role_id bigint references roles,
+    primary key (user_id, role_id)
 );
